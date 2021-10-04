@@ -31,16 +31,22 @@ void skipComment() {
 }
 
 Token* readIdentKeyword(void) {
-  char keyword[50];
+  // TODO
+  char keyword[20];
   int length = 1;
-  while (charCodes[currentChar] != CHAR_SPACE) {
+  while (charCodes[currentChar] == CHAR_LETTER) {
     keyword[length-1] = currentChar;
     length ++;
     readChar();
   }
   keyword[length-1] = '\0';
-  return makeToken(checkKeyword(keyword), lineNo, colNo);
-  // TODO
+  TokenType type = checkKeyword(keyword);
+  if (type != TK_NONE) {
+    return makeToken(type, lineNo, colNo);
+  }
+  Token *token = makeToken(TK_IDENT, lineNo, colNo);
+  strcpy(token->string, keyword);
+  return token;
 }
 
 Token* readNumber(void) {
