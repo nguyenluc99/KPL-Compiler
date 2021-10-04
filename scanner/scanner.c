@@ -22,7 +22,6 @@ extern CharCode charCodes[];
 /***************************************************************/
 
 void skipBlank() {
-  readChar();
   // TODO
 }
 
@@ -31,15 +30,6 @@ void skipComment() {
 }
 
 Token* readIdentKeyword(void) {
-  char keyword[50];
-  int length = 1;
-  while (charCodes[currentChar] != CHAR_SPACE) {
-    keyword[length-1] = currentChar;
-    length ++;
-    readChar();
-  }
-  keyword[length-1] = '\0';
-  return makeToken(checkKeyword(keyword), lineNo, colNo);
   // TODO
 }
 
@@ -169,7 +159,3 @@ int main(int argc, char *argv[]) {
 }
 
 
-
-// Token* readIdentKeyword(void) {
-//   // TODO
-// }
