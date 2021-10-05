@@ -48,8 +48,38 @@ Token* readIdentKeyword(void) {
   return token;
 }
 
+int biggerThanMax(char* stringNumber) {
+  int i;
+  char stringMax[12];
+  sprintf(stringMax, "%d", INT_MAX);
+
+  for (i = 0; i < 10; i++){
+    if (stringMax[i] != stringNumber[i]) 
+      return (stringNumber[i] > stringMax[i]) ? 1 : 0;
+  }
+  return 0;
+}
+
 Token* readNumber(void) {
   // TODO
+  // char stringNumber[11];
+  int length = 0;
+  Token *token = makeToken(TK_NUMBER, lineNo, colNo);
+  while (charCodes[currentChar] == CHAR_DIGIT) {
+    token->string[length++] = currentChar;
+    if (length > 10) {
+      error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
+    }
+    readChar();
+  }
+  token->string[length] = '\0';
+  if (length == 10 && biggerThanMax(token->string)) {
+      error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
+  } else {
+    token->value = atoi(token->string);
+    return token;
+  }
+
 }
 
 Token* readConstChar(void) {
