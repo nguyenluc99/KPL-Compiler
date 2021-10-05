@@ -67,18 +67,19 @@ Token* readNumber(void) {
   while (charCodes[currentChar] == CHAR_DIGIT) {
     token->string[length++] = currentChar;
     if (length > 10) {
+      printf("LARGE STRING length 11 IS %s\n", token->string);
       error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
     }
     readChar();
   }
   token->string[length] = '\0';
   if (length == 10 && biggerThanMax(token->string)) {
+      printf("LARGE STRING length 10 IS %s\n", token->string);
       error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
   } else {
     token->value = atoi(token->string);
     return token;
   }
-
 }
 
 Token* readConstChar(void) {
@@ -103,6 +104,21 @@ Token* getToken(void) {
     // ....
     // TODO
     // ....
+  // case CHAR_MINUS:
+  // case CHAR_TIMES:
+  // case CHAR_SLASH:
+  // case CHAR_LT:
+  // case CHAR_GT:
+  // case CHAR_EXCLAIMATION:
+  // case CHAR_EQ:
+  // case CHAR_COMMA:
+  // case CHAR_PERIOD:
+  // case CHAR_COLON:
+  // case CHAR_SEMICOLON:
+  // case CHAR_SINGLEQUOTE:
+  // case CHAR_LPAR:
+  // case CHAR_RPAR:
+  // case CHAR_UNKNOWN:
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
