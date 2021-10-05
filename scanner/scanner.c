@@ -23,12 +23,25 @@ extern CharCode charCodes[];
 /***************************************************************/
 
 void skipBlank() {
-  readChar();
   // TODO
+  readChar();
 }
 
 void skipComment() {
   // TODO
+  char prev;
+  if (currentChar == '*') { // (* and *)
+    prev = currentChar;
+    readChar();
+    while ((currentChar != ')' || prev != '*') && currentChar != EOF) {
+      prev = currentChar;
+      readChar();
+    }
+  } else if (currentChar == '/') { // "//" case
+    while (currentChar != '\n' && currentChar != EOF) readChar();
+  }
+  if (currentChar == EOF) error(ERR_ENDOFCOMMENT, lineNo, colNo);
+  readChar();
 }
 
 Token* readIdentKeyword(void) {
@@ -64,7 +77,7 @@ Token* readNumber(void) {
   // TODO
   int length = 0;
   Token *token = makeToken(TK_NUMBER, lineNo, colNo);
-  while (charCodes[currentChar] == CHAR_DIGIT) {
+  while (charCodes[currentChar] == CHAR_DIGIT && currentChar != EOF ) {
     token->string[length++] = currentChar;
     if (length > 10) {
       printf("LARGE STRING length 11 IS %s\n", token->string);
@@ -114,9 +127,17 @@ Token* getToken(void) {
   // case CHAR_COMMA:
   // case CHAR_PERIOD:
   // case CHAR_COLON:
-  // case CHAR_SEMICOLON:
+  case CHAR_SEMICOLON:
+    token = makeToken(SB_COLON, lineNo, colNo);
+    readChar();
+    return token;
   // case CHAR_SINGLEQUOTE:
-  // case CHAR_LPAR:
+  case CHAR_LPAR:
+    readChar();
+    if (currentChar == '*') {
+      skipComment();
+    }
+    return getToken();
   // case CHAR_RPAR:
   // case CHAR_UNKNOWN:
   default:
