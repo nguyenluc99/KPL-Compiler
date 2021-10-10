@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <ctype.h>
 
 #include "reader.h"
 #include "charcode.h"
@@ -42,15 +43,20 @@ void skipComment() {
 Token* readIdentKeyword(void) {
   // TODO
   int length = 0;
+  int containUpper = 0;
   Token *token = makeToken(TK_IDENT, lineNo, colNo);
   while (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT) {
+    if (isupper(currentChar)) {
+      containUpper = 1;
+      currentChar = tolower(currentChar);
+    }
     token->string[length++] = currentChar;
     if (length > 15)  // MAX_IDENT_LEN = 15 
       error(ERR_IDENTTOOLONG, token->lineNo, token->colNo);
     readChar();
   }
   token->string[length] = '\0';
-  TokenType tokenType = checkKeyword(token->string);
+  TokenType tokenType = containUpper == 0 ? checkKeyword(token->string) : TK_NONE;
   if (tokenType != TK_NONE)  // is a keyword 
     token->tokenType = tokenType;
   return token;
