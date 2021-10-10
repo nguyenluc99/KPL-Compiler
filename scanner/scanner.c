@@ -172,9 +172,11 @@ Token* getToken(void) {
     return token;
 
   case CHAR_EQ:
-    token = makeToken(SB_EQ, lineNo, colNo);
+    ln = lineNo; cn = colNo;
     readChar();
-    return token;
+    TokenType tokenType = currentChar == '=' ? SB_EQ : SB_ASSIGN;
+    if (tokenType == SB_EQ) readChar();
+    return makeToken(tokenType, ln, cn);
 
   case CHAR_COMMA:
     token = makeToken(SB_COMMA, lineNo, colNo);
@@ -187,14 +189,8 @@ Token* getToken(void) {
     return token;
 
   case CHAR_COLON:
-    ln = lineNo; cn = colNo;
     readChar();
-    if (currentChar == '=') {
-      token = makeToken(SB_ASSIGN, ln, cn);
-      readChar();
-    } else {
-      token = makeToken(SB_COLON, ln, cn);
-    }
+    token = makeToken(SB_COLON, lineNo, colNo);
     return token;
 
   case CHAR_SEMICOLON:
