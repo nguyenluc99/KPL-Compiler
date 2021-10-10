@@ -29,16 +29,11 @@ void skipBlank() {
 
 void skipComment() {
   // TODO
-  char prev;
-  if (currentChar == '*') { // (* and *)
+  char prev = currentChar;
+  readChar();
+  while ((currentChar != '/' || prev != '*') && currentChar != EOF) {
     prev = currentChar;
     readChar();
-    while ((currentChar != ')' || prev != '*') && currentChar != EOF) {
-      prev = currentChar;
-      readChar();
-    }
-  } else if (currentChar == '/') { // "//" case
-    while (currentChar != '\n' && currentChar != EOF) readChar();
   }
   if (currentChar == EOF) error(ERR_ENDOFCOMMENT, lineNo, colNo);
   readChar();
@@ -139,9 +134,16 @@ Token* getToken(void) {
     return token;
     
   case CHAR_SLASH:
-    token = makeToken(SB_SLASH, lineNo, colNo);
+    ln = lineNo; cn = colNo;
     readChar();
-    return token;
+    if (currentChar == '*') {
+      skipComment();
+      return getToken();
+    } else {
+      token = makeToken(SB_SLASH, ln, cn);
+      readChar();
+      return token;
+    }
 
   case CHAR_LT:
     token = makeToken(SB_LT, lineNo, colNo);
@@ -206,10 +208,6 @@ Token* getToken(void) {
       token = makeToken(SB_LSEL, ln, cn);
       readChar();
       return token;
-    }
-    else if (currentChar == '*') {
-      skipComment();
-      return getToken();
     } else {
       token = makeToken(SB_LPAR, ln, cn);
       return token; 
