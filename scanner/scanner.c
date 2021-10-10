@@ -67,7 +67,6 @@ int biggerThanMax(char* stringNumber) {
   int i;
   char stringMax[12];
   sprintf(stringMax, "%d", INT_MAX);
-
   for (i = 0; i < 10; i++){
     if (stringMax[i] != stringNumber[i]) 
       return (stringNumber[i] > stringMax[i]) ? 1 : 0;
@@ -81,15 +80,11 @@ Token* readNumber(void) {
   Token *token = makeToken(TK_NUMBER, lineNo, colNo);
   while (charCodes[currentChar] == CHAR_DIGIT && currentChar != EOF ) {
     token->string[length++] = currentChar;
-    if (length > 10) {
-      error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
-    }
+    if (length > 10) error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
     readChar();
   }
   token->string[length] = '\0';
-  if (length == 10 && biggerThanMax(token->string)) {
-    error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
-  }
+  if (length == 10 && biggerThanMax(token->string) error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
   token->value = atoi(token->string);
   return token;
 }
@@ -145,11 +140,10 @@ Token* getToken(void) {
     if (currentChar == '*') {
       skipComment();
       return getToken();
-    } else {
-      token = makeToken(SB_SLASH, ln, cn);
-      readChar();
-      return token;
-    }
+    } 
+    token = makeToken(SB_SLASH, ln, cn);
+    readChar();
+    return token;
 
   case CHAR_LT:
     token = makeToken(SB_LT, lineNo, colNo);
@@ -164,9 +158,7 @@ Token* getToken(void) {
   case CHAR_EXCLAIMATION:
     ln = lineNo; cn = colNo;
     readChar();
-    if (currentChar != '=') {
-      error(ERR_INVALIDSYMBOL, ln, cn);
-    }
+    if (currentChar != '=') error(ERR_INVALIDSYMBOL, ln, cn);
     token = makeToken(SB_NEQ, ln, cn);
     readChar();
     return token;
@@ -189,8 +181,8 @@ Token* getToken(void) {
     return token;
 
   case CHAR_COLON:
-    readChar();
     token = makeToken(SB_COLON, lineNo, colNo);
+    readChar();
     return token;
 
   case CHAR_SEMICOLON:
@@ -209,11 +201,10 @@ Token* getToken(void) {
     if (currentChar == '.') {
       token = makeToken(SB_LSEL, ln, cn);
       readChar();
-      return token;
     } else {
       token = makeToken(SB_LPAR, ln, cn);
-      return token; 
     }
+    return token; 
 
   case CHAR_RPAR:
     token = makeToken(SB_RPAR, lineNo, colNo);
