@@ -1,10 +1,12 @@
 Replace the lexical rules of the KPL language with the following rules:
 
+## Tasks for assignment 2: Extended Lexical Analyzer:
+
 ### Identifiers:
 A valid identifier can have letters (both uppercase and lowercase letters), digits and underscores.
 - The first letter of an identifier should be a letter 
 - You cannot use keywords as identifiers.
-- Length of an identì?er is not over than 15. 
+- Length of an identifier is not over than 15. 
 - Identifiers are case-insensitive
 
 ### Keywords:
