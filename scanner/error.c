@@ -25,7 +25,10 @@ void error(ErrorCode err, int lineNo, int colNo) {
   case ERR_NUMBERTOOLARGE:
     printf("%d-%d:%s\n", lineNo, colNo, ERM_NUMBERTOOLARGE);
     break;
+  case ERR_STRINGCONSTTOOLONG:
+    printf("%d-%d:%s\n", lineNo, colNo, ERM_STRINGCONSTTOOLONG);
+    break;
   }
-  exit(-1);
+//exit(-1);
 }
 
