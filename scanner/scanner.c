@@ -50,12 +50,13 @@ Token* readIdentKeyword(void) {
       containUpper = 1;
       currentChar = tolower(currentChar);
     }
-    token->string[length++] = currentChar;
-    if (length > 15)  // MAX_IDENT_LEN = 15 
-      error(ERR_IDENTTOOLONG, token->lineNo, token->colNo);
+    if (length < 15) token->string[length] = currentChar; // save only 15 characters for identifier
+    length ++;
     readChar();
   }
-  token->string[length] = '\0';
+  if (length > MAX_IDENT_LEN) 
+    error(ERR_IDENTTOOLONG, token->lineNo, token->colNo);
+  token->string[length>15?15:length] = '\0';
   TokenType tokenType = containUpper == 0 ? checkKeyword(token->string) : TK_NONE;
   if (tokenType != TK_NONE)  // is a keyword 
     token->tokenType = tokenType;
@@ -84,7 +85,7 @@ Token* readNumber(void) {
     readChar();
   }
   token->string[length] = '\0';
-  if (length == 10 && biggerThanMax(token->string) error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
+  if (length == 10 && biggerThanMax(token->string)) error(ERR_NUMBERTOOLARGE, token->lineNo, token->colNo);
   token->value = atoi(token->string);
   return token;
 }
@@ -93,14 +94,29 @@ Token* readConstChar(void) {
   // TODO
   Token *token = makeToken(TK_CHAR, lineNo, colNo);
   int length = 0;
+  char addedChar;
   readChar();
-  while (currentChar != '\'' && currentChar != EOF) {
-    token->string[length++] = currentChar;
+  while (currentChar != EOF && currentChar >= 32 && currentChar <= 127) { // printable character
+    if (currentChar == '\\') {
+      readChar();
+      switch(currentChar){
+        case '\\': addedChar = '\\'; break;
+        case 't': addedChar = '\t'; break;
+        case 'n': addedChar = '\n'; break;
+        default:
+          error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
+      }
+    } else if (currentChar == '\'') {
+      readChar();
+      if (currentChar == '\'') addedChar = '\''; else break;
+    } else addedChar = currentChar;
+    if (length < MAX_IDENT_LEN) token->string[length] = addedChar;
+    length ++;
     readChar();
-    if (length > 15)  // MAX_IDENT_LEN = 15 
-      error(ERR_IDENTTOOLONG, token->lineNo, token->colNo);
   }
-  token->string[length] = '\0';
+  if (length >  MAX_IDENT_LEN) 
+    error(ERR_STRINGCONSTTOOLONG, token->lineNo, token->colNo);
+  token->string[length>MAX_IDENT_LEN?MAX_IDENT_LEN:length] = '\0';
   if (currentChar == EOF) error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
   return token;
 }
