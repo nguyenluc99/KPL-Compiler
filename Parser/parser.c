@@ -95,35 +95,62 @@ void compileConstDecl(void) {
 
 void compileTypeDecls(void) {
   // TODO
+  while (lookAhead->tokenType==TK_IDENT) 
+    compileTypeDecl();
 }
 
 void compileTypeDecl(void) {
   // TODO
+  eat(TK_IDENT);
+  eat(SB_EQUAL);
+  compileType();
+  eat(SB_SEMICOLON);
 }
 
 void compileVarDecls(void) {
   // TODO
+  while (lookAhead->tokenType==TK_IDENT) 
+    compileTypeDecl();
 }
 
 void compileVarDecl(void) {
   // TODO
+  eat(TK_IDENT);
+  eat(SB_EQUAL);
+  compileType();
+  eat(SB_SEMICOLON);
 }
 
 void compileSubDecls(void) {
   assert("Parsing subtoutines ....");
   // TODO
+  compileFuncDecl();
   assert("Subtoutines parsed ....");
 }
 
 void compileFuncDecl(void) {
   assert("Parsing a function ....");
   // TODO
+  eat(KW_FUNCTION);
+  eat(TK_IDENT);
+  compileParams();
+  eat(SB_COLON);
+  compileBasicType();
+  eat(SB_SEMICOLON);
+  compileBlock();
+  eat(SB_SEMICOLON);
   assert("Function parsed ....");
 }
 
 void compileProcDecl(void) {
   assert("Parsing a procedure ....");
   // TODO
+  eat(KW_PRODUCE);
+  eat(TK_IDENT);
+  compileParams();
+  eat(SB_SEMICOLON);
+  compileBlock();
+  eat(SB_SEMICOLON);
   assert("Procedure parsed ....");
 }
 
