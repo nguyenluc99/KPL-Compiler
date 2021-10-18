@@ -1,0 +1,20 @@
+PROGRAM firstSumSquares;
+
+Var N : INTEGER;
+    index : INTEGER;
+    SUM : INTEGER;
+
+FUNCTION square(n : INTEGER) : INTEGER ;
+    BEGIN
+        square := n * n;
+    END;
+
+BEGIN
+    N := READI;
+    SUM := 0;
+    FOR index := 1 TO N DO
+        BEGIN
+           SUM := SUM + square(index);
+        END;
+END.
+
