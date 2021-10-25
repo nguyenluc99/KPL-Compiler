@@ -94,13 +94,13 @@ void compileConstDecl(void) {
 }
 
 void compileTypeDecls(void) {
-  // TODO
+  // TODO DONE
   while (lookAhead->tokenType==TK_IDENT) 
     compileTypeDecl();
 }
 
 void compileTypeDecl(void) {
-  // TODO
+  // TODO DONE
   eat(TK_IDENT);
   eat(SB_EQUAL);
   compileType();
@@ -108,13 +108,13 @@ void compileTypeDecl(void) {
 }
 
 void compileVarDecls(void) {
-  // TODO
+  // TODO DONE
   while (lookAhead->tokenType==TK_IDENT) 
     compileTypeDecl();
 }
 
 void compileVarDecl(void) {
-  // TODO
+  // TODO DONE
   eat(TK_IDENT);
   eat(SB_EQUAL);
   compileType();
@@ -144,7 +144,7 @@ void compileFuncDecl(void) {
 
 void compileProcDecl(void) {
   assert("Parsing a procedure ....");
-  // TODO
+  // TODO DONE
   eat(KW_PRODUCE);
   eat(TK_IDENT);
   compileParams();
@@ -227,6 +227,7 @@ void compileStatement(void) {
 }
 
 void compileAssignSt(void) {
+  // Left
   assert("Parsing an assign statement ....");
   // TODO
   assert("Assign statement parsed ....");
@@ -313,6 +314,7 @@ void compileTerm2(void) {
 
 void compileFactor(void) {
   // TODO
+  // Left
 }
 
 void compileIndexes(void) {
