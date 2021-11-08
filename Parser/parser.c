@@ -71,14 +71,29 @@ void compileBlock3(void) {
 }
 
 void compileBlock4(void) {
-  compileSubDecls();
+  if (lookAhead->tokenType == KW_FUNCTION) compileFuncDecls();
   compileBlock5();
 }
 
 void compileBlock5(void) {
+  if (lookAhead->tokenType == KW_PROCEDURE) compileProcDecls();
+  compileBlock6();
+}
+
+void compileBlock6(void) {
   eat(KW_BEGIN);
   compileStatements();
   eat(KW_END);
+}
+
+void compileFuncDecls(void) {
+  while (lookAhead->tokenType == KW_FUNCTION)
+    compileFuncDecl();
+}
+
+void compileProcDecls(void) {
+  while (lookAhead->tokenType == KW_PROCEDURE)
+    compileProcDecl();
 }
 
 void compileConstDecls(void) {
@@ -129,7 +144,6 @@ void compileSubDecls(void) {
     compileFuncDecl();
     } else {
     compileProcDecl();
-
     }
   }
   assert("Subtoutines parsed ....");
