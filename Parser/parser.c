@@ -71,12 +71,12 @@ void compileBlock3(void) {
 }
 
 void compileBlock4(void) {
-  if (lookAhead->tokenType == KW_FUNCTION) compileFuncDecls();
+  compileFuncDecls();
   compileBlock5();
 }
 
 void compileBlock5(void) {
-  if (lookAhead->tokenType == KW_PROCEDURE) compileProcDecls();
+  compileProcDecls();
   compileBlock6();
 }
 
