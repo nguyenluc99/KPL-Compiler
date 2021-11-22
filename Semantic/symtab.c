@@ -41,29 +41,51 @@ Type* makeArrayType(int arraySize, Type* elementType) {
 }
 
 Type* duplicateType(Type* type) {
-  // TODO
+  // TODO DONE
+  Type* t = (Type*) malloc(sizeof(type));
+  t->typeClass = type->typeClass;
+  t->arraySize = type->arraySize;
+  t->elementType = type->elementType;
+  return t;
 }
 
 int compareType(Type* type1, Type* type2) {
   // TODO
+  return 0;
 }
 
 void freeType(Type* type) {
   // TODO
+  return 0;
 }
 
 /******************* Constant utility ******************************/
 
 ConstantValue* makeIntConstant(int i) {
-  // TODO
+  // TODO DONE
+  ConstantValue* cv = (ConstantValue*) malloc(sizeof(ConstantValue));
+  cv->type = TP_INT;
+  cv->intValue = i;
+  return cv;
 }
 
 ConstantValue* makeCharConstant(char ch) {
-  // TODO
+  // TODO DONE
+  ConstantValue* cv = (ConstantValue*) malloc(sizeof(ConstantValue));
+  cv->type = TP_CHAR;
+  cv->charValue = ch;
+  return cv;
 }
 
 ConstantValue* duplicateConstantValue(ConstantValue* v) {
-  // TODO
+  // TODO DONE
+  ConstantValue* cv = (ConstantValue*) malloc(sizeof(ConstantValue));
+  cv->type = v->type;
+  if (cv->type == TP_INT)
+    cv->intValue = v->intValue;
+  else if (cv->type == TP_CHAR)
+    cv->charValue = v->charValue;
+  return cv;
 }
 
 /******************* Object utilities ******************************/
@@ -88,27 +110,67 @@ Object* createProgramObject(char *programName) {
 }
 
 Object* createConstantObject(char *name) {
-  // TODO
+  // TODO DONE
+  Object* obj = (Object*) malloc(sizeof(Object));
+  obj->kind = OBJ_CONSTANT;
+  strcpy(obj->name, name);
+  obj->constAttrs = (ConstantAttributes*)malloc(sizeof(ConstantAttributes));
+  obj->constAttrs->value = NULL;
+  return obj;
 }
 
 Object* createTypeObject(char *name) {
-  // TODO
+  // TODO DONE
+  Object* obj = (Object*) malloc(sizeof(Object));
+  obj->kind = OBJ_TYPE;
+  strcpy(obj->name, name);
+  obj->typeAttrs = (TypeAttributes*)malloc(sizeof(TypeAttributes));
+  obj->typeAttrs->value = NULL;
+  return obj;
+}
 }
 
 Object* createVariableObject(char *name) {
-  // TODO
+  // TODO DONE
+  Object* obj = (Object*) malloc(sizeof(Object));
+  obj->kind = OBJ_VAR;
+  strcpy(obj->name, name);
+  obj->varAttrs = (VarAttributes*)malloc(sizeof(VarAttributes));
+  obj->varAttrs->value = NULL;
+  return obj;
 }
 
 Object* createFunctionObject(char *name) {
-  // TODO
+  // TODO DONE
+  Object* obj = (Object*) malloc(sizeof(Object));
+  obj->kind = OBJ_FUNCTION;
+  strcpy(obj->name, name);
+  obj->functionAttrs = (FunctionAttributes*)malloc(sizeof(FunctionAttributes));
+  obj->functionAttrs->value = NULL;
+  return obj;
 }
 
 Object* createProcedureObject(char *name) {
-  // TODO
+  // TODO DONE
+  Object* obj = (Object*) malloc(sizeof(Object));
+  obj->kind = OBJ_PROCEDURE;
+  strcpy(obj->name, name);
+  obj->procedureAttrs = (ProcedureAttributes*)malloc(sizeof(ProcedureAttributes));
+  obj->procedureAttrs->value = NULL;
+  return obj;
 }
 
 Object* createParameterObject(char *name, enum ParamKind kind, Object* owner) {
-  // TODO
+  // TODO HALF
+  Object* obj = (Object*) malloc(sizeof(Object));
+  obj->kind = OBJ_PARAMETER;
+  strcpy(obj->name, name);
+  obj->parameterAttrs = (ParameterAttributes*)malloc(sizeof(ParameterAttributes));
+  obj->parameterAttrs->kind = kind;
+  obj->parameterAttrs->function = owner;
+  obj->parameterAttrs->type = NULL; // not clear
+  return obj;
+}
 }
 
 void freeObject(Object* obj) {
