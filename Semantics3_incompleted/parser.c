@@ -247,11 +247,16 @@ ConstantValue* compileConstant(void) {
   case SB_PLUS:
     eat(SB_PLUS);
     constValue = compileConstant2();
+    if (constValue->type != TP_INT) 
+      error(ERR_UNDECLARED_INT_CONSTANT, currentToken->colNo, currentToken->lineNo);
+    constValue->intValue = constValue->intValue;
     break;
   case SB_MINUS:
     eat(SB_MINUS);
     constValue = compileConstant2();
-    constValue->intValue = - constValue->intValue;
+    if (constValue->type != TP_INT)
+      error(ERR_UNDECLARED_INT_CONSTANT, currentToken->colNo, currentToken->lineNo);
+    constValue->intValue = -constValue->intValue;
     break;
   case TK_CHAR:
     eat(TK_CHAR);

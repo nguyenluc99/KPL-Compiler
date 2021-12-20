@@ -63,8 +63,8 @@ Object* checkDeclaredConstant(char* name) {
     if (obj != NULL && obj->kind ==  OBJ_CONSTANT) break;
   } while (obj != NULL);
   searching = 0;
-  if (obj == NULL) 
-    error(ERR_UNDECLARED_CONSTANT, currentToken->lineNo, currentToken->colNo);
+//if (obj == NULL) 
+//    error(ERR_UNDECLARED_CONSTANT, currentToken->lineNo, currentToken->colNo);
   return obj;
 }
 
