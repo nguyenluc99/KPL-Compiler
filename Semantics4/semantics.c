@@ -5,7 +5,6 @@
  */
 
 #include <stdlib.h>
-#include <stdio.h> // remove
 #include <string.h>
 #include "semantics.h"
 #include "error.h"
@@ -142,7 +141,6 @@ void checkArrayType(Type* type) {
 void checkTypeEquality(Type* type1, Type* type2) {
   // TODO
   if (type1->typeClass != type2->typeClass) {
-      printf("TYPE INCONssssssssssssssssssS");
     error(ERR_TYPE_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
   } else if (type1->typeClass == TP_ARRAY) {
     checkTypeEquality(type1->elementType, type2->elementType);

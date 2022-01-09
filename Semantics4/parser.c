@@ -198,7 +198,7 @@ void compileProcDecl(void) {
 }
 
 ConstantValue* compileUnsignedConstant(void) {
-  ConstantValue* constValue;
+  ConstantValue* constValue = NULL;
   Object* obj;
 
   switch (lookAhead->tokenType) {
@@ -249,7 +249,7 @@ ConstantValue* compileConstant(void) {
 }
 
 ConstantValue* compileConstant2(void) {
-  ConstantValue* constValue;
+  ConstantValue* constValue = NULL;
   Object* obj;
 
   switch (lookAhead->tokenType) {
@@ -273,7 +273,7 @@ ConstantValue* compileConstant2(void) {
 }
 
 Type* compileType(void) {
-  Type* type;
+  Type* type = NULL;
   Type* elementType;
   int arraySize;
   Object* obj;
@@ -312,7 +312,7 @@ Type* compileType(void) {
 }
 
 Type* compileBasicType(void) {
-  Type* type;
+  Type* type = NULL;
 
   switch (lookAhead->tokenType) {
   case KW_INTEGER: 
@@ -345,7 +345,7 @@ void compileParams(void) {
 void compileParam(void) {
   Object* param;
   Type* type;
-  enum ParamKind paramKind;
+  enum ParamKind paramKind = 0;
 
   switch (lookAhead->tokenType) {
   case TK_IDENT:
@@ -410,23 +410,8 @@ void compileStatement(void) {
 }
 
 Type* compileLValue(void) {
-  // parse a lvalue (a variable, an array element, a parameter, the current function identifier)
-  Object* var = NULL;
-  Type* varType = NULL;
-
-  eat(TK_IDENT);
-  // check if the identifier is a function identifier, or a variable identifier, or a parameter  
-  var = checkDeclaredLValueIdent(currentToken->string);
-  if (var->kind == OBJ_VARIABLE)
-    varType = compileIndexes(var->varAttrs->type);
-  else if (var->kind == OBJ_FUNCTION)
-    varType = var->funcAttrs->returnType;
-  else if (var->kind == OBJ_PARAMETER)
-    varType = var->paramAttrs->type;
-
-  return varType;
   // TODO: parse a lvalue (a variable, an array element, a parameter, the current function identifier)
-  //Object* var = NULL;
+  Object* var = NULL;
 
   eat(TK_IDENT);
   // check if the identifier is a function identifier, or a variable identifier, or a parameter  
@@ -444,11 +429,9 @@ void compileAssignSt(void) {
   // TODO: DONE parse the assignment and check type consistency
   Type *type1 = NULL;
   Type *type2 = NULL;
-  printf("COMPILING ASSIGNMENT\n");
   type1 = compileLValue();
   eat(SB_ASSIGN);
   type2 = compileExpression();
-  printf("ASSSSSIGNEING %d - %d\n", type1->typeClass, type2->typeClass);
   checkTypeEquality(type1, type2);
 }
 
@@ -494,7 +477,7 @@ void compileForSt(void) {
   // TODO: DONE Check type consistency of FOR's variable 
   eat(KW_FOR);
   eat(TK_IDENT);
-  Type *typeExp1, *typeExp2, *typeVar;
+  Type *typeExp1, *typeExp2;
 
   // check if the identifier is a variable
   Object *var = checkDeclaredVariable(currentToken->string);
@@ -521,11 +504,10 @@ void compileArgument(Object* param) {
     if (lookAhead->tokenType == TK_IDENT) {
       checkDeclaredLValueIdent(lookAhead->string);
     } else {
-      printf("TYPE INCONssssssssssssssssssS");
       error(ERR_TYPE_INCONSISTENCY, lookAhead->lineNo, lookAhead->colNo);
     }
   }
-  Type *type = compileExpression();
+  compileExpression();
 }
 
 void compileArguments(ObjectNode* paramList) {
@@ -721,8 +703,8 @@ void compileTerm2(void) {
 Type* compileFactor(void) {
   // TODO: parse a factor and return the factor's type
 
-  Object* obj;
-  Type* type;
+  Object* obj = NULL;
+  Type* type = NULL;
 
   switch (lookAhead->tokenType) {
   case TK_NUMBER:
@@ -731,7 +713,7 @@ Type* compileFactor(void) {
     break;
   case TK_CHAR:
     eat(TK_CHAR);
-    type = makeIntType();
+    type = makeCharType();
     break;
   case TK_IDENT:
     eat(TK_IDENT);
