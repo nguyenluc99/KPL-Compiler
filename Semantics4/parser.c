@@ -735,7 +735,7 @@ Type* compileFactor(void) {
       break;
     case OBJ_FUNCTION:
       type = obj->funcAttrs->returnType;
-      compileArguments(obj->procAttrs->paramList);
+      compileArguments(obj->funcAttrs->paramList);
       break;
     default: 
       error(ERR_INVALID_FACTOR,currentToken->lineNo, currentToken->colNo);
