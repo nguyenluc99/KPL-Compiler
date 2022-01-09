@@ -410,24 +410,46 @@ void compileStatement(void) {
 }
 
 Type* compileLValue(void) {
-  // TODO: parse a lvalue (a variable, an array element, a parameter, the current function identifier)
-  Object* var;
-  Type* varType;
+  // parse a lvalue (a variable, an array element, a parameter, the current function identifier)
+  Object* var = NULL;
+  Type* varType = NULL;
 
   eat(TK_IDENT);
   // check if the identifier is a function identifier, or a variable identifier, or a parameter  
   var = checkDeclaredLValueIdent(currentToken->string);
   if (var->kind == OBJ_VARIABLE)
-    compileIndexes();
+    varType = compileIndexes(var->varAttrs->type);
+  else if (var->kind == OBJ_FUNCTION)
+    varType = var->funcAttrs->returnType;
+  else if (var->kind == OBJ_PARAMETER)
+    varType = var->paramAttrs->type;
 
   return varType;
+  // TODO: parse a lvalue (a variable, an array element, a parameter, the current function identifier)
+  //Object* var = NULL;
+
+  eat(TK_IDENT);
+  // check if the identifier is a function identifier, or a variable identifier, or a parameter  
+  var = checkDeclaredLValueIdent(currentToken->string);
+  if (var->kind == OBJ_VARIABLE)
+    return compileIndexes(var->varAttrs->type);
+  if (var->kind == OBJ_FUNCTION)
+    return var->funcAttrs->returnType;
+  if (var->kind == OBJ_PARAMETER)
+    return var->paramAttrs->type;
+  return NULL;
 }
 
 void compileAssignSt(void) {
-  // TODO: parse the assignment and check type consistency
-  compileLValue();
+  // TODO: DONE parse the assignment and check type consistency
+  Type *type1 = NULL;
+  Type *type2 = NULL;
+  printf("COMPILING ASSIGNMENT\n");
+  type1 = compileLValue();
   eat(SB_ASSIGN);
-  compileExpression();
+  type2 = compileExpression();
+  printf("ASSSSSIGNEING %d - %d\n", type1->typeClass, type2->typeClass);
+  checkTypeEquality(type1, type2);
 }
 
 void compileCallSt(void) {
@@ -469,18 +491,24 @@ void compileWhileSt(void) {
 }
 
 void compileForSt(void) {
-  // TODO: Check type consistency of FOR's variable
+  // TODO: DONE Check type consistency of FOR's variable 
   eat(KW_FOR);
   eat(TK_IDENT);
+  Type *typeExp1, *typeExp2, *typeVar;
 
   // check if the identifier is a variable
-  checkDeclaredVariable(currentToken->string);
+  Object *var = checkDeclaredVariable(currentToken->string);
+  checkBasicType(var->varAttrs->type);
 
   eat(SB_ASSIGN);
-  compileExpression();
+  typeExp1 = compileExpression();
+  checkBasicType(typeExp1);
 
   eat(KW_TO);
-  compileExpression();
+  typeExp2 = compileExpression();
+  checkBasicType(typeExp2);
+  checkTypeEquality(typeExp1, typeExp2);
+  checkTypeEquality(typeExp1, var->varAttrs->type);
 
   eat(KW_DO);
   compileStatement();
@@ -489,7 +517,15 @@ void compileForSt(void) {
 void compileArgument(Object* param) {
   // TODO: parse an argument, and check type consistency
   //       If the corresponding parameter is a reference, the argument must be a lvalue
-  compileExpression();
+  if (param->paramAttrs->kind == PARAM_REFERENCE) {
+    if (lookAhead->tokenType == TK_IDENT) {
+      checkDeclaredLValueIdent(lookAhead->string);
+    } else {
+      printf("TYPE INCONssssssssssssssssssS");
+      error(ERR_TYPE_INCONSISTENCY, lookAhead->lineNo, lookAhead->colNo);
+    }
+  }
+  Type *type = compileExpression();
 }
 
 void compileArguments(ObjectNode* paramList) {
@@ -497,11 +533,14 @@ void compileArguments(ObjectNode* paramList) {
   switch (lookAhead->tokenType) {
   case SB_LPAR:
     eat(SB_LPAR);
-    compileArgument();
+    compileArgument(paramList->object);
 
     while (lookAhead->tokenType == SB_COMMA) {
       eat(SB_COMMA);
-      compileArgument();
+      paramList = paramList->next;
+      if (paramList != NULL)
+      compileArgument(paramList->object);
+      else error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
     }
     
     eat(SB_RPAR);
@@ -688,9 +727,11 @@ Type* compileFactor(void) {
   switch (lookAhead->tokenType) {
   case TK_NUMBER:
     eat(TK_NUMBER);
+    type = makeIntType();
     break;
   case TK_CHAR:
     eat(TK_CHAR);
+    type = makeIntType();
     break;
   case TK_IDENT:
     eat(TK_IDENT);
@@ -699,14 +740,20 @@ Type* compileFactor(void) {
 
     switch (obj->kind) {
     case OBJ_CONSTANT:
+      type = makeIntType();
+      type->typeClass = obj->constAttrs->value->type;
       break;
     case OBJ_VARIABLE:
-      compileIndexes();
+      if (obj->varAttrs->type->typeClass != TP_ARRAY)
+        type = obj->varAttrs->type;
+      else type = compileIndexes(obj->varAttrs->type);
       break;
     case OBJ_PARAMETER:
+      type = obj->paramAttrs->type;
       break;
     case OBJ_FUNCTION:
-      compileArguments();
+      type = obj->funcAttrs->returnType;
+      compileArguments(obj->procAttrs->paramList);
       break;
     default: 
       error(ERR_INVALID_FACTOR,currentToken->lineNo, currentToken->colNo);
@@ -722,11 +769,16 @@ Type* compileFactor(void) {
 
 Type* compileIndexes(Type* arrayType) {
   // TODO: parse a sequence of indexes, check the consistency to the arrayType, and return the element type
+  Type *indexType = NULL;
   while (lookAhead->tokenType == SB_LSEL) {
     eat(SB_LSEL);
-    compileExpression();
+    checkArrayType(arrayType);
+    indexType = compileExpression();
+    checkIntType(indexType);
     eat(SB_RSEL);
+    arrayType = arrayType->elementType;
   }
+  return arrayType;
 }
 
 int compile(char *fileName) {
