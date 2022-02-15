@@ -1,0 +1,6 @@
+Program Example1; (* Example 1 *)
+CONST temp =  1;
+VAR temp : Integer;
+Begin
+
+End. (* Example 1 *)
