@@ -6,13 +6,13 @@ int main() {
     char ch;
     int letter = 0, digit = 0;
     printf("FILENAME TO READ:\t");
-    scanf("%[^\n]", filename); while ((ch=getchar()) != '\n'); 
+    scanf("%[^\n]", filename); while ((ch=getchar()) != '\n');
     fp = fopen(filename, "r");
 
     if (fp == NULL) {
         printf("None pointer\n");
     } else {
-        ch = fgetc(fp); 
+        ch = fgetc(fp);
         while (ch != EOF) {
             if (ch >= '0' && ch <= '9') {
                 digit ++;
